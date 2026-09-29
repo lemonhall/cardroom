@@ -131,6 +131,13 @@ test("暗牌：结算前只把庄家的第一张交给客户端", () => {
   assert.deepEqual(visibleDealer(dealer, true), { cards: dealer, total: 21, hidden: 0 });
 });
 
+test("庄家空手时没有暗牌（`hidden` 是 0，不是 -1）", () => {
+  // 负数会一路传到客户端：前端照着 `hidden` 去数暗牌位，`-1` 只能被当成"没发牌"去特判。
+  assert.deepEqual(visibleDealer([], false), { cards: [], total: 0, hidden: 0 });
+  assert.deepEqual(visibleDealer([], true), { cards: [], total: 0, hidden: 0 });
+  assert.equal(visibleDealer([card("10")], false).hidden, 0);
+});
+
 test("旋钮都是可解释的整数（它们是接口的一部分）", () => {
   assert.equal(STARTING_CHIPS % MIN_BET, 0);
   assert.equal(MAX_BET % BET_STEP, 0);

@@ -109,7 +109,9 @@ export function emptyStats() {
 export function visibleDealer(dealer, reveal) {
   const cards = reveal ? dealer : dealer.slice(0, 1);
   const total = handValue(cards).total;
-  return { cards, total, hidden: reveal ? 0 : dealer.length - 1 };
+  // 空手时不能算成 -1 张暗牌：那不是"藏了一张"，那是"还没发牌"。客户端会照着
+  // `hidden` 去摆暗牌位，负数的含义只有后端自己知道，前端只能猜。
+  return { cards, total, hidden: reveal ? 0 : Math.max(0, dealer.length - 1) };
 }
 
 /** 下注校验。它是规则的一部分（服务端说了算），所以不留任何"前端已经校验过"的缝。 */

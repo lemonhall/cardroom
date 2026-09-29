@@ -25,11 +25,36 @@ import { createMuster, unwrapRpc } from "./muster.mjs";
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_PUBLIC = path.join(HERE, "..", "public");
 
-const STATIC_FILES = {
-  "/": { file: "index.html", type: "text/html; charset=utf-8" },
-  "/app.js": { file: "app.js", type: "text/javascript; charset=utf-8" },
-  "/style.css": { file: "style.css", type: "text/css; charset=utf-8" },
+/**
+ * 静态文件：只认下面这张表里的后缀，路径解析后必须还在 `public/` 里。
+ *
+ * 这是"网关也是唯一的出口"的一部分：浏览器拿到的每一个字节都从这条路由出去，
+ * 所以不存在"另一个端口上跑着前端"这种需要解释的部署形状。
+ */
+const STATIC_TYPES = {
+  ".html": "text/html; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".webp": "image/webp",
+  ".ico": "image/x-icon",
+  ".woff2": "font/woff2",
 };
+
+/** 命中就返回 Buffer，否则返回 null（由调用方回 404）。 */
+function readStatic(publicDir, pathname) {
+  const root = path.resolve(publicDir);
+  const wanted = pathname === "/" ? "index.html" : decodeURIComponent(pathname).replace(/^\/+/u, "");
+  const target = path.resolve(root, wanted);
+  // 目录穿越（`/../.env`）在这里被挡住：解析完的路径必须还在 public/ 里面。
+  if (target !== root && !target.startsWith(root + path.sep)) return null;
+  const type = STATIC_TYPES[path.extname(target).toLowerCase()];
+  if (type === undefined || !fs.existsSync(target) || !fs.statSync(target).isFile()) return null;
+  return { body: fs.readFileSync(target), type };
+}
 
 const DEVICE_COOKIE = "cardroom_device";
 const MAX_BODY = 4096;
@@ -134,12 +159,17 @@ export function createGateway({ config, muster, publicDir = DEFAULT_PUBLIC }) {
     const url = new URL(request.url ?? "/", "http://localhost");
     const route = `${request.method ?? "GET"} ${url.pathname}`;
 
-    if (request.method === "GET" && url.pathname in STATIC_FILES) {
-      const entry = STATIC_FILES[url.pathname];
-      const text = fs.readFileSync(path.join(publicDir, entry.file));
-      response.writeHead(200, { "content-type": entry.type, "content-length": text.length });
-      response.end(text);
-      return;
+    if (request.method === "GET" || request.method === "HEAD") {
+      const asset = readStatic(publicDir, url.pathname);
+      if (asset !== null) {
+        response.writeHead(200, {
+          "content-type": asset.type,
+          "content-length": asset.body.length,
+          "cache-control": "no-store",
+        });
+        response.end(request.method === "HEAD" ? undefined : asset.body);
+        return;
+      }
     }
 
     const guard = (work) => {

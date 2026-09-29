@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>CARDROOM · 21 点牌室</title>
+    <meta
+      name="description"
+      content="一个跑在 Muster 平台上的 21 点牌室：规则在服务端，渲染在浏览器，这个页面只是一块屏幕。"
+    />
+    <!-- 内联图标：省掉一次 404，也省掉一个文件。 -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23121009'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='16' fill='%23e6c283' text-anchor='middle'%3E21%3C/text%3E%3C/svg%3E"
+    />
+    <!-- 四张表按"底座 → 排版 → 操作 → 窄屏取舍"的顺序叠加：后加载的覆盖前面的。 -->
+    <link rel="stylesheet" href="/styles/base.css" />
+    <link rel="stylesheet" href="/styles/hud.css" />
+    <link rel="stylesheet" href="/styles/controls.css" />
+    <link rel="stylesheet" href="/styles/responsive.css" />
+  </head>
+  <body>
+    <!-- 3D 牌桌占满整屏，HUD 浮在上面。DOM 只做文字与按钮，一切图形都在 WebGL 里。 -->
+    <div id="stage" aria-hidden="true"></div>
+
+    <main class="hud">
+      <header class="hud__top panel">
+        <div class="brand">
+          <span class="brand__mark">21</span>
+          <span class="brand__text">
+            <b>CARDROOM</b>
+            <small>规则跑在平台，前端只是一块屏幕</small>
+          </span>
+        </div>
+        <dl class="stats">
+          <div><dt>余额</dt><dd id="stat-chips">—</dd></div>
+          <div><dt>你</dt><dd id="stat-you">—</dd></div>
+          <div><dt>庄家</dt><dd id="stat-dealer">—</dd></div>
+          <div><dt>局数</dt><dd id="stat-rounds">0</dd></div>
+          <div><dt>胜负平</dt><dd id="stat-record">0 / 0 / 0</dd></div>
+          <div><dt>累计净胜</dt><dd id="stat-net">0</dd></div>
+          <div><dt>牌鞋</dt><dd id="stat-shoe">—</dd></div>
+        </dl>
+        <div class="identity">
+          <span class="identity__dot" id="link-dot"></span>
+          <span id="identity-name">正在认设备…</span>
+        </div>
+      </header>
+
+      <section class="hud__left" aria-label="平台数据">
+        <article class="panel card">
+          <h2>累计净胜榜<small>排行榜 · Bearer 令牌</small></h2>
+          <ol class="board" id="board"></ol>
+        </article>
+        <article class="panel card">
+          <h2>筹码账本<small>控制台 · server key</small></h2>
+          <ul class="ledger" id="ledger"></ul>
+        </article>
+      </section>
+
+      <section class="hud__right" aria-label="调用流水">
+        <article class="panel card card--trace">
+          <h2>后端调用流水<small>每一次都真的打出去了</small></h2>
+          <ol class="trace" id="trace"></ol>
+        </article>
+      </section>
+
+      <footer class="hud__bottom">
+        <div class="panel bet" id="bet-panel">
+          <div class="bet__row">
+            <button class="step" id="bet-down" type="button" aria-label="减小下注">−</button>
+            <div class="bet__amount">
+              <span class="bet__label">本注</span>
+              <strong id="bet-value">50</strong>
+            </div>
+            <button class="step" id="bet-up" type="button" aria-label="加大下注">+</button>
+          </div>
+          <button class="cta" id="deal" type="button">发牌</button>
+        </div>
+        <div class="panel actions" id="action-panel">
+          <button class="cta cta--hit" id="hit" type="button">要牌</button>
+          <button class="cta cta--stand" id="stand" type="button">停牌</button>
+        </div>
+        <div class="panel outcome" id="outcome-panel" hidden>
+          <strong id="outcome-text">—</strong>
+          <span id="outcome-delta"></span>
+        </div>
+      </footer>
+    </main>
+
+    <div id="boot" class="boot">
+      <div class="boot__inner">
+        <span class="boot__mark">21</span>
+        <p id="boot-text">正在点亮牌桌…</p>
+      </div>
+    </div>
+
+    <script type="module" src="/js/app.js"></script>
+  </body>
+</html>

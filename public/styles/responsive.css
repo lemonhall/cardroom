@@ -1,0 +1,43 @@
+/*
+ * 窄屏的三条退让，按"越窄越舍"排序：
+ *
+ *   1. 1080 以下：收起左右两栏。牌桌永远优先——它才是内容，两栏只是注解；
+ *   2. 640 以下：顶部只留最要紧的几个数字，副标题和多余统计项让位；
+ *   3. 按钮缩小，保证"发牌 / 要牌 / 停牌"仍在拇指够得着的地方。
+ *
+ * 单独成文件的理由：这里改的是**取舍顺序**，不是某一块的样式。
+ * 把它混进 hud.css 或 controls.css，都会让"这一栏该长什么样"和"窄屏时先砍谁"搅在一起。
+ */
+
+@media (max-width: 1080px) {
+  .hud {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .hud__left,
+  .hud__right {
+    display: none;
+  }
+
+  .stats div:nth-child(n + 4) {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .stats div:nth-child(n + 3) {
+    display: none;
+  }
+
+  .brand__text small {
+    display: none;
+  }
+
+  .cta {
+    min-width: 88px;
+    padding: 10px 12px;
+    font-size: 15px;
+    letter-spacing: 2px;
+  }
+}

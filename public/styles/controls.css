@@ -1,0 +1,132 @@
+/*
+ * 底部的**操作条**：下注旋钮、发牌、要牌/停牌，以及结算横幅。
+ *
+ * 一条设计约定：三块面板**互相替换**而不是并排堆着——下注时看得到旋钮，
+ * 牌在手上时看得到要牌/停牌，结算完看得到结果。同一时刻只有一件事要做。
+ */
+
+.hud__bottom {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  pointer-events: none;
+}
+
+.hud__bottom > .panel {
+  pointer-events: auto;
+}
+
+.bet,
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+}
+
+.bet__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bet__amount {
+  min-width: 96px;
+  text-align: center;
+}
+
+.bet__label {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 3px;
+}
+
+#bet-value {
+  font-family: var(--serif);
+  font-size: 26px;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.step {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.step:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.cta {
+  min-width: 116px;
+  padding: 12px 20px;
+  border: 1px solid var(--gold-dim);
+  border-radius: 12px;
+  background: linear-gradient(170deg, #2b2214, #14100a);
+  color: var(--gold);
+  font-family: var(--serif);
+  font-size: 17px;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 200ms ease;
+}
+
+.cta:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(230, 194, 131, 0.16);
+}
+
+.cta--hit {
+  border-color: #7ba7c8;
+  color: #a8cbe6;
+  background: linear-gradient(170deg, #16222c, #0b1116);
+}
+
+.cta--stand {
+  border-color: #c08a6a;
+  color: #e6b795;
+  background: linear-gradient(170deg, #2a1a12, #140c08);
+}
+
+button:disabled {
+  opacity: 0.34;
+  cursor: not-allowed;
+}
+
+.outcome {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px 22px;
+}
+
+.outcome strong {
+  font-family: var(--serif);
+  font-size: 22px;
+  letter-spacing: 4px;
+}
+
+.outcome.is-win strong,
+.outcome.is-win span {
+  color: var(--win);
+}
+
+.outcome.is-lose strong,
+.outcome.is-lose span {
+  color: var(--lose);
+}
+
+.outcome.is-push strong,
+.outcome.is-push span {
+  color: var(--gold);
+}

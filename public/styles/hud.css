@@ -1,0 +1,282 @@
+/*
+ * HUD 的**排版**：三行三列的栅格，以及左右两栏里那些"平台数据"面板。
+ *
+ * 中间那一列是空着的——它必须空着，因为牌桌在那儿。左边是平台侧的事实（榜单、账本），
+ * 右边是这次会话干了什么（调用流水），下面是操作。一块面板只讲一件事。
+ */
+
+.hud {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  /* 左右两栏是"给牌桌留出中间"的：面板再宽一点，牌桌就没地方了。 */
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr) minmax(0, 340px);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 14px;
+  pointer-events: none;
+}
+
+.hud__top {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 12px 18px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.brand__mark,
+.boot__mark {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--gold-dim);
+  background: linear-gradient(160deg, #2a2113, #120e07);
+  color: var(--gold);
+  font-family: var(--serif);
+  font-size: 20px;
+  letter-spacing: 1px;
+  box-shadow: inset 0 0 18px rgba(230, 194, 131, 0.18);
+}
+
+.brand__text b {
+  display: block;
+  font-family: var(--serif);
+  font-size: 18px;
+  letter-spacing: 4px;
+}
+
+.brand__text small {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.stats {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+}
+
+.stats div {
+  min-width: 84px;
+  padding: 6px 12px;
+  border-left: 1px solid var(--line);
+}
+
+.stats dt {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
+.stats dd {
+  margin: 2px 0 0;
+  font-family: var(--serif);
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+#stat-chips {
+  color: var(--gold);
+}
+
+/* 点数：21 点给金色、爆牌给红色。这两个颜色是全局唯一的"真·状态色"。 */
+#stat-you.is-21 {
+  color: var(--gold);
+}
+
+#stat-you.is-bust {
+  color: var(--lose);
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.identity__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #8a7a5a;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.identity__dot.is-live {
+  background: var(--win);
+}
+
+.identity__dot.is-error {
+  background: var(--lose);
+}
+
+.hud__left,
+.hud__right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  pointer-events: auto;
+  grid-row: 2;
+}
+
+.hud__left {
+  grid-column: 1;
+}
+
+.hud__right {
+  grid-column: 3;
+  align-items: flex-end;
+}
+
+.card {
+  padding: 12px 14px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.hud__left .card {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 38vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.card h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 8px;
+  font-family: var(--serif);
+  font-size: 15px;
+  letter-spacing: 2px;
+}
+
+.card h2 small {
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0;
+}
+
+/* 三个列表（榜单 / 账本 / 流水）共用同一套"行"的观感。 */
+.board,
+.ledger,
+.trace {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: auto;
+  font-size: 13px;
+}
+
+.board,
+.ledger {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.board li,
+.ledger li,
+.trace li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 2px;
+  border-bottom: 1px dashed rgba(230, 194, 131, 0.12);
+}
+
+.board li:last-child,
+.ledger li:last-child,
+.trace li:last-child {
+  border-bottom: 0;
+}
+
+.board .rank {
+  width: 20px;
+  color: var(--gold-dim);
+  font-family: var(--serif);
+}
+
+.board .name {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.board .score,
+.ledger .amount {
+  font-variant-numeric: tabular-nums;
+}
+
+.board li.is-mine {
+  color: var(--gold);
+}
+
+.ledger .reason {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.ledger .amount.is-plus {
+  color: var(--win);
+}
+
+.ledger .amount.is-minus {
+  color: var(--lose);
+}
+
+/* 调用流水：等宽字体 + 三列栅格（动词 / 干了啥 / 耗时），像一份日志。 */
+.card--trace {
+  width: 100%;
+  max-height: 52vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.trace li {
+  display: grid;
+  grid-template-columns: 46px 1fr auto;
+  gap: 8px;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 11px;
+}
+
+.trace .verb {
+  color: var(--gold-dim);
+}
+
+.trace .what {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trace .ms {
+  color: var(--muted);
+}
+
+.trace li.is-error .verb,
+.trace li.is-error .what {
+  color: var(--lose);
+}
