@@ -1,7 +1,7 @@
 /**
  * 规则层的单元测试。
  *
- * 为什么这些用例能在 Node 里跑：`runtime/blackjack.js` 顶上那批纯函数不碰 `nk`，
+ * 为什么这些用例能在 Node 里跑：`runtime/blackjack-rules.js` 那批纯函数不碰 `nk`，
  * 洗牌的随机源是**注入**进来的。所以"牌怎么算、怎么结算"这件事的正确性，
  * 不需要起后端、不需要起网关，一条 `node --test` 就能钉住。
  */
@@ -24,7 +24,7 @@ import {
   resolveRound,
   shuffle,
   visibleDealer,
-} from "../runtime/blackjack.js";
+} from "../runtime/blackjack-rules.js";
 
 /** 固定种子的线性同余：测试里每次洗牌都必须一样。 */
 function seededRandom(seed) {
