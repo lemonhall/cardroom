@@ -1,0 +1,17 @@
+{
+  "name": "cardroom",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "description": "A tiny server-authoritative blackjack card room, powered by the Muster backend",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "start": "node src/gateway.mjs",
+    "test": "node --test",
+    "smoke": "node scripts/smoke.mjs"
+  }
+}
